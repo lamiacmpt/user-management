@@ -24,10 +24,10 @@ jobs:
           java-version: 21
 
       - name: Setup Maven
-        shell: powershell
+        shell: cmd
         run: |
-          echo "MAVEN_HOME=$env:USERPROFILE\maven\apache-maven-3.8.8" >> $env:GITHUB_ENV
-          echo "$env:USERPROFILE\maven\apache-maven-3.8.8\bin" >> $env:GITHUB_PATH
+          echo MAVEN_HOME=%USERPROFILE%\maven\apache-maven-3.8.8 >> %GITHUB_ENV%
+          echo %USERPROFILE%\maven\apache-maven-3.8.8\bin >> %GITHUB_PATH%
         #      - name: Setup Maven
         #        shell: powershell
         #        run: |
@@ -61,9 +61,9 @@ jobs:
 
         # Push Docker image to DockerHub or other container registry
       - name: Log in to DockerHub
-        shell: powershell
+        shell: cmd
         run: |
-          docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
       - name: Push Docker image
         run: |
           docker push carikk/quality-gate:latest
@@ -71,9 +71,10 @@ jobs:
 
       # Set up kubeconfig from secret
       - name: Set up kubeconfig
+        shell: cmd
         run: |
-          echo "${{ secrets.KUBECONFIG_CONTENT }}" > $HOME/.kube/config
-          kubectl config use-context docker-desktop  # Set context to docker-desktop
+          echo ${{ secrets.KUBECONFIG_CONTENT }} > %USERPROFILE%\.kube\config
+          kubectl config use-context docker-desktop
           kubectl config set-context --current --namespace=ensakh
 
       # Verify Kubernetes context
